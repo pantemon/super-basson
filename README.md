@@ -57,7 +57,7 @@ Soon...
 8. `Account Screen` should show beta testers the requests from server to update their info (height, weight etc.), notifications that new tasks were added etc. This patter called Server-Sent Events.
 
 
-## Reference Prisma Schema
+## Prisma Schema
 
 ```prisma
 
