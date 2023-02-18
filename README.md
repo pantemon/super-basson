@@ -333,6 +333,9 @@ We should assume that password is email and username is public_key while develop
 
 Only BETATESTERs may start sessions. ADMINs may not start session, but they can manage users, manage tasks, fetch sessions etc.
 
+If user sends more than ~ 300 batches, user should be banned
+
+number_of_batches = 10 minutes * 60 seconds * 0.5 sensor_reading_batches_per_second = 300 batches
 
 Admin
 BetaTester
