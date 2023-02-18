@@ -1,4 +1,4 @@
-# Super Bassoon Server: Backend For Mobile Device Sensor Readings Collection App
+# Super Bassoon: A Mobile App for Collecting Device Sensor Readings (Private Beta Test I)
 
 ## Purpose
 
