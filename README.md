@@ -135,6 +135,16 @@ function fetchUsers(take: Int, skip: Int) -> User[];
 function deleteUser(userId: Int) -> User;
 ```
 
+## `Auth @Service`
+
+```typescript
+
+// function authentificateUser(...) -> ...
+
+// function authorizeUser(...) -> ...
+
+```
+
 ## `Sessions @Service`
 
 ```typescript
@@ -319,7 +329,10 @@ Soon...
 
 For Task #1, everything related to logic with WebSocketGateway should be done
 
-We should assume that password is email and username is public_key while developing user authentification strategy
+We should assume that password is email and username is public_key while developing user authentification strategy.
+
+Only BETATESTERs may start sessions. ADMINs may not start session, but they can manage users, manage tasks, fetch sessions etc.
+
 
 Admin
 BetaTester
