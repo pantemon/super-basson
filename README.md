@@ -1,18 +1,67 @@
-# Backend For Motion Sensors Data Collection App
+# Super Bassoon Server: Backend For Mobile Device Sensor Readings Collection App
 
-## Context
+## Purpose
 
-Для того, чтобы разработать модель, которая будет анализировать движение человека и определять едет ли человек на велосипеде, необходимо собрать показатели следующих датчиков: акселерометра, гироскопа & магнетометра.
+We need to train a machine learning model to analyze user motion and determined it types. Model will analyze sensor readings of accelerometer, gyroscope, and magnetometer. In the future, the number of sensors may increase.
+
+Collection of such an enormous amount of data is quite a challenging task.
+
+Firstly, we should have an easy way to communicate with beta testers i.e., tell them which type of data they should collect, and what data format they should use for storing it. 
+
+Secondly, we should be able to onboard new people and manage present beta testers without a hustle. 
+
+Tridly, we should be able to collect data using the same API as one that will be used in production because different APIs has different interfaces, overhead etc. that may affect the efficiency of the machine learning model.
+
+Therefore, we decided to develop a mobile app designed to satisfy all of our needs.
+
+## How Does A Mobile App Work 
+
+### Signing in v1.0.0
+
+0. Bob completes an application for participation in our Private Beta Testers Program. He specifies his name, email, NEAR wallet address, country of residense, age, gender, height, weight, a model of mobile device etc. Bob may be asked to update his 'configuration' in the future.
+1. Bob signs in a mobile app using their account's private key (`Welcome Screen`).
+2. Now, Bob may swith between `Session History Screen`, `Home Screen`, and `Account Screen`. Initially, Bob sees `Home Screen`.
+
+### Collecting Motion Sensor Readings v1.0.0
+
+1. To start a sensor readings recording session, Bob clicks a corresponding button in `Home Screen`.
+2. After that, Bob may configure a new session metadata in `Session Configuration Screen`. See *Special Notes #2* for more details.
+3. Now, the most interesting part. Bob is establising connection with `Services @WebSocketGateway`. He may not be able to establish the connection if a number of active connections to the server (i.e., how many other beta testers are recording motion sensors data now) reaches WEBSOCKET_GATEWAY_CONNECTION_LIMIT.
+4. Once he has connected to `Services @WebSocketGateway`, he can click a corresponding button to create session and start recording sensor readings. Bob will be disconnected from `Services @WebSocketGateway` if he does not start session within 30 seconds after connection. After 10 minutes since session has been created, the session will be destroyed, and Bob will be disconnected from `Services @WebSocketGateway`. The same will happen if Bob requests to destroy session. To destroy session, Bob clicks the corresponding button. He can also observe time left until the session will be destroyed using a timer in `Session Screen`. Bob can also see status of backages that he has sent. 
+5. After the session has been destroyed, Bob sees how much time the session has taken, how many packages he has sent and how many packages he has lost in `Session Summary Screen`. 
+
+### Viewing The Session History vX.Y.Z
+Soon...
+
+### Sending & Receiving Notifications vX.Y.Z
+Soon...
+
+### Creating Tasks
+
+### Applying for Early Access vX.Y.Z
+Soon...
+
+### AND MUCH MORE
+Soon...
 
 
+### Special Notes
 
-## 
+1. Stage 0 may be moved to the app in the future. For example, Bob downloads the mobile app and fills out the application. Until he get an approvement from the team, he sees `Early Access Application Screen` and the message `"We are reviewing your application. You will get an access once we proceed it. You will be also notified on your email bob@gmail.com`. Bob will have role `Applicant` until he 
+2. Session's metadata is not finalized yet and may be changed in the future. It may include a type of activity he is going to record, position of his device while recording, a type of his bike and a terrain type of the surrounding area.
+3. Bob may be required to add the photo of the bike he is going to record his data with and specify the bike's state.
+4. In the future, when user motion recognition app is built, there must be a mechanism for @WebSocketGateway horizontal scailing in order to handle millions of users.
+5. To avoid the situation in which beta testers will 'overrecord' a specific type of data, and not record other types, manual metadata configuration should be replaces by a predetermined set of tasks. Tasks are set by our team that will allow us to collect data relevant to us at a given moment. Players will be limited in a number. In the future it will allow to create a leaderboard, but we will not tell anyone that they will receive rewards for helping us, and that there will be any leaderboard to avoid losses in the quality of data.
+6. In the future, we may also collect location-related data and data from position sensors.
+7. We should also collect how many sensor readings has been lost, however they were generated. 
+8. `Account Screen` should show beta testers the requests from server to update their info (height, weight etc.), notifications that new tasks were added etc. This patter called Server-Sent Events.
 
-### Reference Prisma Schema
+
+## Reference Prisma Schema
 
 ```prisma
 
-// Models for Users business-logic
+// Models For Session-Related Business Logic
 
 enum Sensor {
   ACCELEROMETER
@@ -20,7 +69,7 @@ enum Sensor {
   MAGNETOMETER
 }
 
-// Can have 1 session
+// A sensor reading must always have a session
 model SensorReading {
   id        Int      @id @default(autoincrement())
   session   Session  @relation(fields: [sessionId], references: [id])
@@ -32,8 +81,8 @@ model SensorReading {
   zAxis     Float
 }
 
-// Can have 1 user
-// Can have many sensor readings
+// A session must always have a user
+// A session can have zero or more sensor readings
 model Session {
   id             Int              @id @default(autoincrement())
   user           User             @relation(fields: [userId], references: [id])
@@ -44,14 +93,14 @@ model Session {
 }
 
 
-// USERS
+// Models For Session-Related Business Logic
 
 enum Role {
   ADMIN
   BETATESTER
 }
 
-// Can have many sessions
+// A user can have zero or more sessions
 model User {
   id        Int       @id @default(autoincrement())
   name      String
@@ -62,167 +111,218 @@ model User {
 }
 ```
 
-### `service Users`
-- create_user() -> int;
-- fetch_users(take: int, skip: int) -> User[];
-- find_user_by_public_key(user_public_key: string) -> User | null;
-- delete_user_by_id(user_id: int) -> int;
+## `Users @Service`
 
-### `service Sessions`
+```typescript
+/**
+ *
+ **/
+function createUser(name: String, publicKey: String, email: String, role: Role) -> User;
 
-type Session = {
-  
-  
-};
+/**
+ *
+ **/
+function findUserByPublicKey(userPublicKey: String) -> User | Null;
 
-type SensorReading = {
-  timestamp: Date,
-  sensor_id: 0 | 1 | 2, // Accelerometer | Gyroscope | Magnetometer
-  x: number,
-  y: number,
-  z: number,
-};
+/**
+ *
+ **/
+function fetchUsers(take: Int, skip: Int) -> User[];
 
+/**
+ *
+ **/
+function deleteUser(userId: Int) -> User;
 ```
 
-type Session = {
-  
-};
+## `Sessions @Service`
 
-type SensorReading = {
-  
-};
+```typescript
+/**
+ *
+ **/
+function createSession(userId: Int) -> Session;
 
+/**
+ *
+ **/
+function writeSensorReadingsIntoSession(sessionId: Int, sensorReadings: SensorReading[]) -> Session | Null;
 
-create_session(
-  
-) -> int;
+/**
+ *
+ **/
+function findSessionById(sessionId: Int) -> Session | Null;
 
-fetch_sessions_for_user(user_id: int, take: int, skip: int) -> Session[];
+/**
+ *
+ **/
+function fetchSessionsForUser(userId: Int, take: Int, skip: Int) -> Session[];
 
-find_session_by_id(session_id: int) -> Session | null;
+/**
+ *
+ **/
+function fetchSensorReadingsForSession(sessionId: Int, take: Int, skip: Int) -> SensorReading[];
 
-destroy_session(session_id: int) -> int
-
-write_sensor_readings_to_session(session_id: int, take: int, skip: int = 0);
-
-fetch_sensor_readings_for_session(session_id: int, take: int, skip: int = 0) -> SensorReading[];
+/**
+ *
+ **/
+function destroySession(sessionId: Int) -> Session;
 ```
 
+## `Tasks @Service`
+Soon...
 
-### `@WebSocketGateway`
+## `Sessions @WebSocketGateway`
 
-```javascript
+### Client-to-Server Events
 
-// onlyRole(PLAYER)
-{
+#### ⛔ `event CreateSession`
+
+```typescript
+type CreateSessionEvent = {
   event: "create_session",
   data: {},
 }
+```
 
 
-// onlyRole(PLAYER)
-// const BATCH_SIZE = 375; may be increased in the future
-{
+#### ⛔ `event WriteSensorReadingsBatch`
+
+```typescript
+
+type SensorReading = {
+  timestamp: Date,
+  sensor: "Accelerometer" | "Gyroscope" | "Magnetometer",
+  xAxis: number, 
+  yAxis: number,
+  zAxis: number,
+};
+
+// See SENSOR_READINGS_BATCH_SIZE
+type WriteSensorReadingsBatchEvent = {
   event: "write_sensor_readings_batch",
   data: {
     batch_id: number,
-    sensor_readings: [{
-      timestamp: Date,
-      sensor: "Accelerometer" | "Gyroscope" | "Magnetometer",
-      xAxis: number, 
-      yAxis: number,
-      zAxis: number,
-    }],
+    sensor_readings: SensorReading[],
   },
 }
+```
 
+#### ⛔ `event DestroySession`
 
+```typescript
 // onlyRole(PLAYER)
-{
+type DestroySessionEvent = {
   event: "destroy_session",
   data: {},
 }
+```
 
+### Server-to-Client Events
 
+#### ⛔ `event SessionCreated`
 
-// SERVER EMITS
-{
+```typescript
+type SessionCreatedEvent = {
   event: "session_created",
   data: {
     sessionId: number,
     createdAt: Date,
   },
 }
+```
 
-{
+#### ⛔ `error SessionAlreadyExist`
+
+```typescript
+type SessionAlreadyExistError = {
   event: "session_already_exist",
   data: {
     sessionId: number,
     createdAt: Date,
   },
 }
+```
 
+#### ⛔ `event SensorReadingsBatchWritten`
 
-{
+```typescript
+type SensorReadingsBatchWrittenEvent = {
   event: "sensor_readings_batch_written",
   data: {
     sessionId: number,
     totalSensorReadingsWritten: number,
   },
 }
+```
 
+#### ⛔ `error InvalidSensorReadingsBatchSize`
+
+```typescript
 // ERROR
 // The size of a sensor readings batch must be equal SENSOR_READINGS_BATCH_SIZE.
-// SENSOR_READINGS_BATCH_SIZE is set as a environmental variable.
-{
+// SENSOR_READINGS_BATCH_SIZE is set as an environmental variable.
+type InvalidSensorReadingsBatchSizeError = {
   event: "invalid_sensor_readings_batch_size",
   data: {
     sessionId: number,
     batchId: number,
   },
 }
+```
 
-// ERROR
-{
+#### ⛔ `error InvalidSensorReadingSchema`
+
+```typescript
+type InvalidSensorReadingSchemaError = {
   event: "invalid_sensor_reading_schema",
   data: {
     sessionId: number,
     batchId: number,
   },
 }
+```
 
+#### ⛔ `event SessionDestroyed`
 
-{
+```typescript
+type SessionDestroyedEvent = {
   event: "session_destroyed",
   data: {
     sessionId: number,
     destroyedAt: Date,
+    totalSensorReadingsWritten: number,
   },
 }
+```
 
-{
+#### ⛔ `error SessionNotFound`
+
+```typescript
+type SessionNotFoundError = {
   event: "session_not_found",
   data: {},
 }
-
-
 ```
 
-### Special Notes
+## `Users @Controller`
+Soon...
+
+## `Sessions @Controller`
+Soon...
+
+## `Tasks @Controller`
+Soon...
+
+
+## Special Notes
 
 For Task #1, everything related to logic with WebSocketGateway should be done
 
-
-You should assume that password is public_key while developing user authentification strategy
-
-Session should be destroyed after 10 minutes (no matter whether the client requested it or not)
+We should assume that password is email and username is public_key while developing user authentification strategy
 
 Admin
 BetaTester
-
-After destroyment of the session, a number of written sensor readings should be 
-If it is not the same as a number of sensor readings sent to a server, BetaTester should report it
 
 Example of e2e testing for a websocket 
 https://github.com/nestjs/nest/blob/master/integration/websockets/e2e/gateway.spec.ts
@@ -230,7 +330,23 @@ https://github.com/nestjs/nest/blob/master/integration/websockets/e2e/gateway.sp
 Stack: Nest.JS, TypeScript, Prisma
 
 
-#### Should be REST API
+Not Available Yet ⛔
+
+Deprecated 🚧 
+
+Well-Tested And Ready-To-Use ✅ 
+
+
+CONSTANTS (ENVIRONMENT VARIABLES)
+Int WEBSOCKET_GATEWAY_CONNECTION_LIMIT = 50;
+Int SENSOR_READINGS_BATCH_SIZE = 375;
+
+
+
+Is it more clear when errors are separated from events? Or it is more clear when they follow each other i.e., there are an event and possible errors related to it?
+
+
+#### Should be a part of REST API
 ```
 // onlyRole(PLAYER) can request sessions for themselves
 {
@@ -256,7 +372,7 @@ Stack: Nest.JS, TypeScript, Prisma
 - Setup TimescaleDB
 - Add support for session metadata
 - Change authentification strategy (web3 auth, verify signature)
-- Write CLI for administration e.g., creation of users, downloading sessions etc.
+- Write CLI for administration 
 
 
 
