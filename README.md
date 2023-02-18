@@ -327,6 +327,9 @@ BetaTester
 Example of e2e testing for a websocket 
 https://github.com/nestjs/nest/blob/master/integration/websockets/e2e/gateway.spec.ts
 
+Example of using Prisma for storing timesiries in PostgreSQL
+https://github.com/dweb3s/super-bassoon
+
 Stack: Nest.JS, TypeScript, Prisma
 
 
