@@ -390,6 +390,7 @@ Is it more clear when errors are separated from events? Or it is more clear when
 
 - Setup TimescaleDB
 - Add support for session metadata
+- Allow beta testers mark sessions that was recorded incorrectly. Also we need to setup a scipt for clearing such sessions from time to time.
 - Change authentification strategy (web3 auth, verify signature)
 - Write CLI for administration 
 
