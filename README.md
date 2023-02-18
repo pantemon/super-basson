@@ -356,12 +356,13 @@ Deprecated 🚧
 Well-Tested And Ready-To-Use ✅ 
 
 
-CONSTANTS (ENVIRONMENT VARIABLES)
-Int WEBSOCKET_GATEWAY_CONNECTION_TIMEOUT = 600; // seconds
-Int WEBSOCKET_GATEWAY_CONNECTION_LIMIT = 50; // number of connections
-Int SENSOR_READINGS_BATCH_SIZE = 375; // number of sensor readings per one batch
+```typescript
+//CONSTANTS (ENVIRONMENT VARIABLES)
 
-
+const WEBSOCKET_GATEWAY_CONNECTION_TIMEOUT = 600; // seconds
+const WEBSOCKET_GATEWAY_CONNECTION_LIMIT = 50; // number of connections
+const SENSOR_READINGS_BATCH_SIZE = 375; // number of sensor readings per one batch
+```
 
 Is it more clear when errors are separated from events? Or it is more clear when they follow each other i.e., there are an event and possible errors related to it?
 
