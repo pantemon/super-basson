@@ -209,6 +209,7 @@ type SensorReading = {
 };
 
 // See SENSOR_READINGS_BATCH_SIZE
+// batch_id is a sequence number. It starts from 0 and increases by 1 every time the client sends a batch of sensor readings. Server needs to know `batch_id` to include in InvalidSensorReadingsBatchSize or InvalidSensorReadingSchema errors.
 type WriteSensorReadingsBatchEvent = {
   event: "write_sensor_readings_batch",
   data: {
@@ -221,7 +222,6 @@ type WriteSensorReadingsBatchEvent = {
 #### ⛔ `event DestroySession`
 
 ```typescript
-// onlyRole(PLAYER)
 type DestroySessionEvent = {
   event: "destroy_session",
   data: {},
