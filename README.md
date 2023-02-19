@@ -27,7 +27,7 @@ Therefore, we decided to develop a mobile app designed to satisfy all of our nee
 1. To start a sensor readings recording session, Bob clicks a corresponding button in `Home Screen`.
 2. After that, Bob may configure a new session metadata in `Session Configuration Screen`. See *Special Notes #2* for more details.
 3. Now, the most interesting part. Bob is establising connection with `Services @WebSocketGateway`. He may not be able to establish the connection if a number of active connections to the server (i.e., how many other beta testers are recording motion sensors data now) reaches WEBSOCKET_GATEWAY_CONNECTION_LIMIT.
-4. Once he has connected to `Services @WebSocketGateway`, he can click a corresponding button to create session and start recording sensor readings. Bob will be disconnected from `Services @WebSocketGateway` if he does not start session within 30 seconds after connection. After 10 minutes since session has been created, the session will be destroyed, and Bob will be disconnected from `Services @WebSocketGateway`. The same will happen if Bob requests to destroy session. To destroy session, Bob clicks the corresponding button. He can also observe time left until the session will be destroyed using a timer in `Session Screen`. Bob can also see status of backages that he has sent. 
+4. Once he has connected to `Services @WebSocketGateway`, he can click a corresponding button to create session and start recording sensor readings. Bob will be disconnected from `Services @WebSocketGateway` if he does not start session within 30 seconds after connection. After 10 minutes since session has been created, the session will be destroyed, and Bob will be disconnected from `Services @WebSocketGateway`. The same will happen if Bob requests to destroy session. To destroy session, Bob clicks the corresponding button. He can also observe time left until the session will be destroyed using a timer in `Session Screen`. Bob can also see status of packages that he has sent. 
 5. After the session has been destroyed, Bob sees how much time the session has taken, how many packages he has sent and how many packages he has lost in `Session Summary Screen`. 
 
 ### Viewing The Session History vX.Y.Z
@@ -156,7 +156,7 @@ function createSession(userId: Int) -> Session;
 /**
  *
  **/
-function writeSensorReadingsIntoSession(sessionId: Int, sensorReadings: SensorReading[]) -> Session | Null;
+function writeSensorReadingsIntoSession(sessionId: Int, sensorReadings: SensorReading[]) -> Int;
 
 /**
  *
