@@ -213,8 +213,8 @@ type SensorReading = {
 type WriteSensorReadingsBatchEvent = {
   event: "write_sensor_readings_batch",
   data: {
-    batch_id: number,
-    sensor_readings: SensorReading[],
+    batchId: number,
+    sensorReadings: SensorReading[],
   },
 }
 ```
