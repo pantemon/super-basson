@@ -390,7 +390,7 @@ If an unknown request sent to `Services @WebSocketServer`, tell the client
 ```
 
 
-### TR;DL
+### To-Do 
 
 - Setup TimescaleDB
 - Add support for session metadata
