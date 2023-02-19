@@ -329,7 +329,7 @@ Soon...
 
 For Task #1, everything related to logic with WebSocketGateway should be done
 
-We should assume that password is email and username is public_key while developing user authentification strategy.
+We should assume that username is public_key while developing user authentification strategy.
 
 Only BETATESTERs may start sessions. ADMINs may not start session, but they can manage users, manage tasks, fetch sessions etc.
 
