@@ -357,7 +357,7 @@ Well-Tested And Ready-To-Use ✅
 
 
 ```typescript
-//CONSTANTS (ENVIRONMENT VARIABLES)
+// CONSTANTS
 
 const WEBSOCKET_GATEWAY_CONNECTION_TIMEOUT = 600; // seconds
 const WEBSOCKET_GATEWAY_CONNECTION_LIMIT = 50; // number of connections
