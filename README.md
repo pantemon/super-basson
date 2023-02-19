@@ -367,6 +367,8 @@ const SENSOR_READINGS_BATCH_SIZE = 375; // number of sensor readings per one bat
 Is it more clear when errors are separated from events? Or it is more clear when they follow each other i.e., there are an event and possible errors related to it?
 
 
+If an unknown request sent to `Services @WebSocketServer`, tell the client
+
 #### Should be a part of REST API
 ```
 // onlyRole(PLAYER) can request sessions for themselves
