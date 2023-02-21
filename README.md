@@ -189,6 +189,8 @@ Soon...
 #### ⛔ `event CreateSession`
 
 ```typescript
+// add session metadata  
+
 type CreateSessionEvent = {
   event: "create_session",
   data: {},
