@@ -392,6 +392,78 @@ If an unknown request sent to `Services @WebSocketServer`, tell the client
 ```
 
 
+## Client
+
+### API
+
+```typescript
+
+// expo-permissions
+// 
+
+
+type SensorReading = {
+  timestamp: Date,
+  sensor: 0 | 1 | 2, // "Accelerometer" | "Gyroscope" | "Magnetometer"
+  xAxis: number, 
+  yAxis: number,
+  zAxis: number,
+};
+
+type Session = {
+  id: number,
+  account: string,
+  createdAt: Date,
+  destroyedAt: Date,
+  metadata: SessionMetadata, 
+  totalSensorReadings: number,
+};
+
+const SENSOR_READINGS_BATCH_SIZE = 375;
+
+class SessionLocalService() {
+  - sessionId: number | null;
+
+  // checks permissions
+  constructor() -> Promise<void>;
+  
+  + createSession(sessionMetadata: SessionMetadata) -> Promise<Session>;
+
+  + writeSensorReadingBatch(sensorReadings: SensorReading[]) -> Promise<void>;
+
+  + destroySession() -> Promise<void>;
+}
+
+  + findSessionById(sessionId: number) -> Promise<Session>;
+
+/**
+ *
+ **/
+function createSession(userId: Int) -> Session;
+
+/**
+ *
+ **/
+function writeSensorReadingsIntoSession(sessionId: Int, sensorReadings: SensorReading[]) -> Int;
+
+/**
+ *
+ **/
+function findSessionById(sessionId: number) -> Session | null;
+
+/**
+ *
+ **/
+function fetchSessions(take: number, skip: number) -> Session[];
+/**
+ *
+ **/
+function destroySession() -> Promise<Session>;
+}
+
+```
+
+
 ### To-Do 
 
 - Setup TimescaleDB
@@ -401,5 +473,10 @@ If an unknown request sent to `Services @WebSocketServer`, tell the client
 - Write CLI for administration 
 
 
-
+```typescript
+// DO NOT IMPLEMENT THAT
+sensorReadings: SensorReading[], // will be in the future    
+sensorReadingsTake: number, // will be in the future
+sensorReadingsSkip: number, // will be in the future
+```
 
