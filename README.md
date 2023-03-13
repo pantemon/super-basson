@@ -263,7 +263,7 @@ type SensorReadingsBatchWrittenEvent = {
   event: "sensor_readings_batch_written",
   data: {
     sessionId: number,
-    totalSensorReadingsWritten: number,
+    batchId: number,
   },
 }
 ```
