@@ -186,25 +186,25 @@ Soon...
 
 ### Client-to-Server Events
 
-#### ⛔ `event CreateSession`
+#### ⛔ `event SessionCreationRequested`
 
 ```typescript
 // add session metadata  
 
-type CreateSessionEvent = {
-  event: "create_session",
+type SessionCreationRequestedEvent = {
+  event: "session_creation_requested",
   data: {},
 }
 ```
 
 
-#### ⛔ `event WriteSensorReadingsBatch`
+#### ⛔ `event SensorReadingsBatchSent`
 
 ```typescript
 
 type SensorReading = {
   timestamp: Date,
-  sensor: "Accelerometer" | "Gyroscope" | "Magnetometer",
+  sensor: "ACCELEROMETER" | "GYROSCOPE" | "MAGNETOMETER",
   xAxis: number, 
   yAxis: number,
   zAxis: number,
@@ -212,20 +212,21 @@ type SensorReading = {
 
 // See SENSOR_READINGS_BATCH_SIZE
 // batch_id is a sequence number. It starts from 0 and increases by 1 every time the client sends a batch of sensor readings. Server needs to know `batch_id` to include in InvalidSensorReadingsBatchSize or InvalidSensorReadingSchema errors.
-type WriteSensorReadingsBatchEvent = {
-  event: "write_sensor_readings_batch",
+
+type SensorReadingsBatchSentEvent = {
+  event: "sensor_readings_batch_sent",
   data: {
-    batchId: number,
+    // batchSequenceNumber: number,
     sensorReadings: SensorReading[],
   },
 }
 ```
 
-#### ⛔ `event DestroySession`
+#### ⛔ `event SessionDestroymentRequested`
 
 ```typescript
-type DestroySessionEvent = {
-  event: "destroy_session",
+type SessionDestroymentRequestedEvent = {
+  event: "session_destroyment_requested",
   data: {},
 }
 ```
@@ -236,23 +237,28 @@ type DestroySessionEvent = {
 
 ```typescript
 type SessionCreatedEvent = {
-  event: "session_created",
+  event: "session_created",  
   data: {
-    sessionId: number,
-    createdAt: Date,
+    ok: true,
+    description: "A new session has been created successfully",
+    result: {
+      sessionId: number,
+      createdAt: Date,
+      // expiresAt: Date,
+    }
   },
 }
 ```
 
-#### ⛔ `error SessionAlreadyExist`
+#### ⛔ `error SessionCreationRejected`
 
 ```typescript
-type SessionAlreadyExistError = {
-  event: "session_already_exist",
+type SessionCreationRequestRejected = {
+  event: "session_creation_rejected",
   data: {
-    sessionId: number,
-    createdAt: Date,
-  },
+    ok: false,
+    description: "Session already exists",
+  }
 }
 ```
 
@@ -262,37 +268,52 @@ type SessionAlreadyExistError = {
 type SensorReadingsBatchWrittenEvent = {
   event: "sensor_readings_batch_written",
   data: {
-    sessionId: number,
-    batchId: number,
+    ok: true,
+    description: "Sensor readings batch #{sequenceNumber} has been written successfully",
+    result: {
+      sessionId: number,
+      // batchSequenceNumber: number,
+    }    
   },
 }
 ```
 
-#### ⛔ `error InvalidSensorReadingsBatchSize`
+#### ⛔ `error SensorReadingsBatchRejected`
 
 ```typescript
 // ERROR
 // The size of a sensor readings batch must be equal SENSOR_READINGS_BATCH_SIZE.
 // SENSOR_READINGS_BATCH_SIZE is set as an environmental variable.
-type InvalidSensorReadingsBatchSizeError = {
-  event: "invalid_sensor_readings_batch_size",
+
+type SensorReadingsBatchRejected = {
+  event: "sensor_readings_batch_rejected",
   data: {
-    sessionId: number,
-    batchId: number,
+    ok: false,
+    description: "Sensor readings batch size must be equal to {SENSOR_READINGS_BATCH_SIZE}",
   },
 }
 ```
 
-#### ⛔ `error InvalidSensorReadingSchema`
+#### ⛔ `error SensorReadingsBatchRejected`
 
 ```typescript
 type InvalidSensorReadingSchemaError = {
   event: "invalid_sensor_reading_schema",
   data: {
-    sessionId: number,
-    batchId: number,
+    ok: false,
+    description: "Sensor readings batch ${sequenceNumber} has invalid schema. Check documentation for more details"
   },
 }
+
+
+//
+// more sensor readings batch rejects should be added
+// for example,
+// - if session has been destroyed and no data can been written
+// - if timestamps are not in ascending order meaning that timestamps are not eligned properly
+// - if batch sequence number is not equal to batch acknowledgment number meaning that specific packages should be resent
+// etc.
+//
 ```
 
 #### ⛔ `event SessionDestroyed`
@@ -301,19 +322,29 @@ type InvalidSensorReadingSchemaError = {
 type SessionDestroyedEvent = {
   event: "session_destroyed",
   data: {
-    sessionId: number,
-    destroyedAt: Date,
-    totalSensorReadingsWritten: number,
+    ok: true,
+    description: "Session has been destroyed successfully",
+    result: {
+      sessionId: number,
+      destroyedAt: Date,
+    }
   },
 }
+
+// for data collecting app there may be additional metrics in result
+// for demo there should be data in result such as average speed, total distance travelled, in-game tokens earned
+
 ```
 
-#### ⛔ `error SessionNotFound`
+#### ⛔ `error SessionDestroymentRejected`
 
 ```typescript
-type SessionNotFoundError = {
-  event: "session_not_found",
-  data: {},
+type SessionDestroymentRejected = {
+  event: "session_destroyment_rejected",
+  data: {
+    ok: false,
+    description: "Session is not found, has expired, or has been destroyed",
+  },
 }
 ```
 
