@@ -195,6 +195,8 @@ type SessionCreationRequestedEvent = {
   event: "session_creation_requested",
   data: {},
 }
+
+// add reject to create session if there is too many sessions created (ACTIVE_SESSIONS_LIMIT = 50)
 ```
 
 
@@ -216,7 +218,7 @@ type SensorReading = {
 type SensorReadingsBatchSentEvent = {
   event: "sensor_readings_batch_sent",
   data: {
-    // batchSequenceNumber: number,
+    batchSequenceNumber: number,
     sensorReadings: SensorReading[],
   },
 }
@@ -244,7 +246,7 @@ type SessionCreatedEvent = {
     result: {
       sessionId: number,
       createdAt: Date,
-      // expiresAt: Date,
+      expiresAt: Date,
     }
   },
 }
@@ -257,9 +259,11 @@ type SessionCreationRequestRejected = {
   event: "session_creation_rejected",
   data: {
     ok: false,
-    description: "Session already exists",
+    description: "Session with the identifier #${sessionId} already exists",
   }
 }
+
+// add new reject in which there is 
 ```
 
 #### ⛔ `event SensorReadingsBatchWritten`
@@ -269,10 +273,10 @@ type SensorReadingsBatchWrittenEvent = {
   event: "sensor_readings_batch_written",
   data: {
     ok: true,
-    description: "Sensor readings batch #{sequenceNumber} has been written successfully",
+    description: "Sensor readings batch #{batchSequenceNumber} has been written successfully",
     result: {
       sessionId: number,
-      // batchSequenceNumber: number,
+      batchSequenceNumber: number,
     }    
   },
 }
@@ -285,11 +289,11 @@ type SensorReadingsBatchWrittenEvent = {
 // The size of a sensor readings batch must be equal SENSOR_READINGS_BATCH_SIZE.
 // SENSOR_READINGS_BATCH_SIZE is set as an environmental variable.
 
-type SensorReadingsBatchRejected = {
+type SensorReadingsBatchRejectedEvent = {
   event: "sensor_readings_batch_rejected",
   data: {
     ok: false,
-    description: "Sensor readings batch size must be equal to {SENSOR_READINGS_BATCH_SIZE}",
+    description: "Sensor readings batch #${batchSequenceNumber} has invalid size",
   },
 }
 ```
@@ -297,11 +301,11 @@ type SensorReadingsBatchRejected = {
 #### ⛔ `error SensorReadingsBatchRejected`
 
 ```typescript
-type InvalidSensorReadingSchemaError = {
-  event: "invalid_sensor_reading_schema",
+type SensorReadingsBatchRejectedEvent = {
+  event: "sensor_readings_batch_rejected",
   data: {
     ok: false,
-    description: "Sensor readings batch ${sequenceNumber} has invalid schema. Check documentation for more details"
+    description: "Sensor readings batch #${batchSequenceNumber} has invalid schema"
   },
 }
 
